@@ -16,7 +16,7 @@
             <Task
               v-for="task of tasks"
               :task="task"
-              @update="() => updateTimestamp(task)"
+              @update="() => updateTask(task)"
               @delete="() => deleteTask(task)"
             />
           </div>
@@ -88,7 +88,19 @@ async function signIn() {
   }
 }
 
-async function updateTimestamp(task: ITask) {
+async function addTask() {
+  if (user.value && title.value.length && timestamp.value.length) {
+    await addDoc(collection(db, 'users', user.value.uid, 'tasks'), {
+      title: title.value,
+      timestamp: Timestamp.fromDate(new Date(timestamp.value))
+    })
+
+    title.value = '';
+    timestamp.value = format(new Date(), "yyyy-MM-dd'T'HH:mm")
+  }
+}
+
+async function updateTask(task: ITask) {
   if (user.value) {
     const docSnap = await getDoc(doc(db, 'users', user.value.uid, 'tasks', task.uid));
     await updateDoc(docSnap.ref, {
@@ -103,17 +115,6 @@ async function deleteTask(task: ITask) {
   }
 }
 
-async function addTask() {
-  if (user.value && title.value.length && timestamp.value.length) {
-    await addDoc(collection(db, 'users', user.value.uid, 'tasks'), {
-      title: title.value,
-      timestamp: Timestamp.fromDate(new Date(timestamp.value))
-    })
-
-    title.value = '';
-    timestamp.value = format(new Date(), "yyyy-MM-dd'T'HH:mm")
-  }
-}
 
 const tasks = ref<ITask[]>([]);
 
