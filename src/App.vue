@@ -1,34 +1,55 @@
 
 <template>
-  <div class="min-w-screen min-h-screen grid place-items-center bg-purple-700">
+  <div
+    class="grid min-h-screen text-purple-100 bg-purple-700 min-w-screen place-items-center"
+  >
     <div v-if="!loading" class="wrapper">
-      <h1 class="font-bold text-2xl text-purple-200">Taken</h1>
-      <button v-if="!user" @click="signIn">Sign in with Google</button>
+      <MButton v-if="!user" @click="signIn">Inloggen met Google</MButton>
       <div v-else>
-        <button @click="signOut">Sign out</button>
-        <pre class="text-white">{{ user.displayName }}</pre>
-        <div v-if="tasks" class="space-y-2">
-          <Task
-            v-for="task of tasks"
-            :task="task"
-            @update="() => updateTimestamp(task)"
-          />
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl font-bold text-purple-200">Taken</h1>
+          <MButton @click="signOut">Uitloggen</MButton>
         </div>
-        <form @submit.prevent="addTask" class="flex flex-col">
-          <input class="w-full" type="text" v-model="title" placeholder="Title" />
-          <input
-            class="w-full"
-            type="datetime-local"
-            v-model="timestamp"
-            placeholder="Datetime"
-          />
-          <button
-            class="bg-purple-600 rounded my-2 py-2 px-4 text-white font-semibold"
-            type="submit"
-          >Add</button>
-        </form>
+        <hr class="mt-4 mb-8 border-purple-500" />
+        <div>
+          <div v-if="tasks.length" class="space-y-2">
+            <Task
+              v-for="task of tasks"
+              :task="task"
+              @update="() => updateTimestamp(task)"
+              @delete="() => deleteTask(task)"
+            />
+          </div>
+          <div
+            v-else
+            class="grid h-24 mb-4 text-lg italic bg-purple-600 rounded place-items-center"
+          >Nog geen taken!</div>
+          <form
+            @submit.prevent="addTask"
+            class="flex flex-col p-4 mt-4 space-y-4 bg-purple-900 rounded-lg"
+          >
+            <h3 class="text-xl font-bold text-center text-white">Nieuwe taak</h3>
+            <input
+              class="w-full rounded text-black"
+              type="text"
+              v-model="title"
+              placeholder="Titel"
+            />
+            <input
+              class="w-full text-black rounded"
+              type="datetime-local"
+              v-model="timestamp"
+              placeholder="Datum/tijd"
+            />
+            <MButton
+              class="px-4 py-2 font-semibold text-white bg-purple-600 rounded"
+              type="submit"
+            >Toevoegen</MButton>
+          </form>
+        </div>
       </div>
     </div>
+    <div v-else>Laden...</div>
   </div>
 </template>
 
@@ -44,15 +65,20 @@ import {
   setPersistence,
   browserSessionPersistence
 } from 'firebase/auth'
-import { collection, doc, getDoc, getFirestore, updateDoc, Timestamp, onSnapshot, query, addDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getFirestore, updateDoc, Timestamp, onSnapshot, query, addDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import Task from './components/Task.vue';
 import { ITask } from './types/task';
+import format from 'date-fns/format';
+import MButton from './components/MButton.vue';
 
 const user = ref<User | null>(null);
 const auth = getAuth();
 const db = getFirestore();
 const loading = ref(true);
-const signIn = async () => {
+const title = ref('');
+const timestamp = ref(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
+
+async function signIn() {
   try {
     await setPersistence(auth, browserSessionPersistence);
     const res = await signInWithPopup(auth, new GoogleAuthProvider());
@@ -61,7 +87,6 @@ const signIn = async () => {
     console.log(e)
   }
 }
-
 
 async function updateTimestamp(task: ITask) {
   if (user.value) {
@@ -72,8 +97,11 @@ async function updateTimestamp(task: ITask) {
   }
 }
 
-const title = ref('');
-const timestamp = ref(new Date().toDateString());
+async function deleteTask(task: ITask) {
+  if (user.value) {
+    await deleteDoc(doc(db, 'users', user.value.uid, 'tasks', task.uid));
+  }
+}
 
 async function addTask() {
   if (user.value) {
@@ -84,6 +112,7 @@ async function addTask() {
     })
 
     title.value = '';
+    timestamp.value = format(new Date(), "yyyy-MM-dd'T'HH:mm")
   }
 }
 
