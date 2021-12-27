@@ -15,6 +15,7 @@
           <div v-if="tasks.length" class="space-y-2">
             <Task
               v-for="task of tasks"
+              :key="task.uid"
               :task="task"
               @update="() => updateTask(task)"
               @delete="() => deleteTask(task)"
@@ -65,7 +66,18 @@ import {
   setPersistence,
   browserSessionPersistence
 } from 'firebase/auth'
-import { collection, doc, getDoc, getFirestore, updateDoc, Timestamp, onSnapshot, query, addDoc, deleteDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc, 
+  getDoc, 
+  getFirestore, 
+  updateDoc, 
+  Timestamp, 
+  onSnapshot, 
+  query, 
+  addDoc, 
+  deleteDoc
+} from 'firebase/firestore';
 import Task from './components/Task.vue';
 import { ITask } from './types/task';
 import format from 'date-fns/format';
@@ -86,6 +98,12 @@ async function signIn() {
   } catch (e) {
     console.log(e)
   }
+}
+
+
+function signOut() {
+  signOutFirebase(auth);
+  user.value = null;
 }
 
 async function addTask() {
@@ -117,11 +135,6 @@ async function deleteTask(task: ITask) {
 
 
 const tasks = ref<ITask[]>([]);
-
-function signOut() {
-  signOutFirebase(auth);
-  user.value = null;
-}
 
 onMounted(() => {
   onAuthStateChanged(auth, async (currUser) => {
