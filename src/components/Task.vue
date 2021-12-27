@@ -6,7 +6,7 @@
   >
     <div class="flex flex-col">
       <h2 class="font-semibold">{{ task.title }}</h2>
-      <small>
+      <small :key="key">
         {{
           formatDistance(task.timestamp.toDate(), new Date(), { addSuffix: true, locale: nl })
         }}
@@ -62,9 +62,13 @@ defineProps({
     required: true,
   }
 });
-
+const key = ref(0);
 const confirmDelete = ref(false);
 const confirmUpdate = ref(false);
+
+setInterval(() => {
+  key.value++;
+}, 10000)
 
 </script>
 
