@@ -1,7 +1,7 @@
 
 <template>
   <div
-    class="grid min-h-screen text-purple-100 bg-purple-700 min-w-screen place-items-center"
+    class="grid min-h-screen px-2 text-purple-100 bg-purple-700 min-w-screen place-items-center"
   >
     <div v-if="!loading" class="wrapper">
       <MButton v-if="!user" @click="signIn">Inloggen met Google</MButton>
@@ -65,7 +65,7 @@ import {
   setPersistence,
   browserSessionPersistence
 } from 'firebase/auth'
-import { collection, doc, getDoc, getFirestore, updateDoc, Timestamp, onSnapshot, query, addDoc, getDocs, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getFirestore, updateDoc, Timestamp, onSnapshot, query, addDoc, deleteDoc } from 'firebase/firestore';
 import Task from './components/Task.vue';
 import { ITask } from './types/task';
 import format from 'date-fns/format';
@@ -104,8 +104,7 @@ async function deleteTask(task: ITask) {
 }
 
 async function addTask() {
-  if (user.value) {
-
+  if (user.value && title.value.length && timestamp.value.length) {
     await addDoc(collection(db, 'users', user.value.uid, 'tasks'), {
       title: title.value,
       timestamp: Timestamp.fromDate(new Date(timestamp.value))

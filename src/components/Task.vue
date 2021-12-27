@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 text-white flex justify-between items-center bg-purple-800 rounded" @click="$emit('update')">
+  <div class="p-4 text-white flex justify-between items-center bg-purple-800 rounded select-none" @click="$emit('update')">
     <div class="flex flex-col">
       <h2>{{ task.title }}</h2>
       <small>
