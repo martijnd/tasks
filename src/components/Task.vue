@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!confirmDelete && !confirmUpdate"
-    class="p-4 min-h-20 text-white flex justify-between items-center bg-purple-800 hover:bg-purple-900 transition-all duration-150 cursor-pointer hover:shadow-lg rounded select-none"
+    class="p-4 min-h-20 text-white flex justify-between items-center bg-stone-800 hover:bg-stone-900 transition-all duration-150 cursor-pointer hover:shadow-lg rounded select-none"
     @click="confirmUpdate = true"
   >
     <div class="flex flex-col">
@@ -14,7 +14,7 @@
     </div>
     <button
       @click.stop="confirmDelete = true"
-      class="rounded-full hover:bg-purple-600 h-10 w-10 font-bold transition-all duration-150"
+      class="rounded-full hover:bg-stone-600 h-10 w-10 font-bold transition-all duration-150 ml-2"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -34,19 +34,19 @@
   </div>
   <div
     v-else-if="confirmUpdate"
-    class="grid grid-cols-2 min-h-20 grid-rows-2 bg-purple-800 hover:bg-purple-900 rounded overflow-hidden"
+    class="grid grid-cols-2 min-h-20 grid-rows-2 bg-stone-800 hover:bg-stone-900 rounded overflow-hidden"
   >
-    <h3 class="col-span-2 text-center self-center font-bold">Update?</h3>
-    <button @click="confirmUpdate = false" class="bg-orange-800 hover:bg-orange-900 py-2 font-semibold">No</button>
-    <button @click="$emit('update'); confirmUpdate = false" class="bg-gray-500 hover:bg-green-700 py-2 font-semibold">Yes</button>
+    <h3 class="col-span-2 text-center self-center font-bold">Updaten?</h3>
+    <button @click="confirmUpdate = false" class="bg-orange-800 hover:bg-orange-900 py-2 font-semibold">Nee</button>
+    <button @click="$emit('update'); confirmUpdate = false" class="bg-gray-500 hover:bg-green-700 py-2 font-semibold">Ja</button>
   </div>
   <div
     v-else
-    class="grid grid-cols-2 min-h-20 grid-rows-2 bg-purple-800 hover:bg-purple-900 rounded overflow-hidden"
+    class="grid grid-cols-2 min-h-20 grid-rows-2 bg-stone-800 hover:bg-stone-900 rounded overflow-hidden"
   >
-    <h3 class="col-span-2 text-center self-center font-bold">Delete?</h3>
-    <button @click="confirmDelete = false" class="bg-orange-800 hover:bg-orange-900 py-2 font-semibold">No</button>
-    <button @click="$emit('delete')" class="bg-gray-500 hover:bg-green-700 py-2 font-semibold">Yes</button>
+    <h3 class="col-span-2 text-center self-center font-bold">Verwijderen?</h3>
+    <button @click="confirmDelete = false" class="bg-orange-800 hover:bg-orange-900 py-2 font-semibold">Nee</button>
+    <button @click="$emit('delete')" class="bg-gray-500 hover:bg-green-700 py-2 font-semibold">Ja</button>
   </div>
 </template>
 

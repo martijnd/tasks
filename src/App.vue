@@ -1,16 +1,16 @@
 
 <template>
   <div
-    class="grid min-h-screen px-2 text-purple-100 bg-purple-700 min-w-screen place-items-center"
+    class="grid min-h-screen px-2 text-stone-100 bg-stone-700 min-w-screen place-items-center py-8"
   >
     <div v-if="!loading" class="wrapper">
       <MButton v-if="!user" @click="signIn">Inloggen met Google</MButton>
       <div v-else>
         <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-purple-200">Taken</h1>
+          <h1 class="text-2xl font-bold text-stone-200">Taken</h1>
           <MButton @click="signOut">Uitloggen</MButton>
         </div>
-        <hr class="mt-4 mb-8 border-purple-500" />
+        <hr class="mt-4 mb-8 border-stone-500" />
         <div>
           <div v-if="tasks.length" class="space-y-2">
             <Task
@@ -23,27 +23,28 @@
           </div>
           <div
             v-else
-            class="grid h-24 mb-4 text-lg italic bg-purple-600 rounded place-items-center"
+            class="grid h-24 mb-4 text-lg italic bg-stone-600 rounded place-items-center"
           >Nog geen taken!</div>
           <form
             @submit.prevent="addTask"
-            class="flex flex-col p-4 mt-4 space-y-4 bg-purple-900 rounded-lg"
+            class="flex flex-col p-4 mt-4 space-y-4 bg-stone-900 rounded"
           >
             <h3 class="text-xl font-bold text-center text-white">Nieuwe taak</h3>
             <input
-              class="w-full rounded text-black"
+              class="w-full text-stone-900 rounded bg-stone-300"
               type="text"
+              ref="titleInput"
               v-model="title"
               placeholder="Titel"
             />
             <input
-              class="w-full text-black rounded"
+              class="w-full text-stone-900 rounded bg-stone-300"
               type="datetime-local"
               v-model="timestamp"
               placeholder="Datum/tijd"
             />
             <MButton
-              class="px-4 py-2 font-semibold text-white bg-purple-600 rounded"
+              class="px-4 py-2 font-semibold text-white bg-stone-600 rounded"
               type="submit"
             >Toevoegen</MButton>
           </form>
@@ -89,6 +90,7 @@ const db = getFirestore();
 const loading = ref(true);
 const title = ref('');
 const timestamp = ref(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
+const titleInput = ref<HTMLInputElement | null>(null);
 
 async function signIn() {
   try {
@@ -110,11 +112,16 @@ async function addTask() {
   if (user.value && title.value.length && timestamp.value.length) {
     await addDoc(collection(db, 'users', user.value.uid, 'tasks'), {
       title: title.value,
-      timestamp: Timestamp.fromDate(new Date(timestamp.value))
+      timestamp: Timestamp.fromDate(new Date(timestamp.value)),
+      createdAt: Timestamp.now()
     })
 
     title.value = '';
     timestamp.value = format(new Date(), "yyyy-MM-dd'T'HH:mm")
+
+    if (titleInput.value) {
+      titleInput.value.focus();
+    }
   }
 }
 
